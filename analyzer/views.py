@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from textblob import TextBlob
 
@@ -6,7 +7,7 @@ from .models import SentimentAnalysis
 
 # Create your views here.
 
-
+@login_required
 def analyze_text(request):
     sentiment = None
     score = None
@@ -15,18 +16,25 @@ def analyze_text(request):
     if request.method == 'POST':
         text = request.POST.get('text', "")
         analysis = TextBlob(text)
-        score = analysis.sentiment.polarity
+        # analyzer = SentimentIntensityAnalyzer()
+        score = analysis.sentiment.polarity_scores(text)["compound"]
 
-        if score > 0:
+        if score > 0.1:
             sentiment = "positive"
 
-        elif score < 0:
+        elif score < - 0.1:
             sentiment = "negative"
 
         else:
             sentiment = "neutral"
 
-        SentimentAnalysis.objects.create(text=text, sentiment=sentiment, score=score)
+        SentimentAnalysis.objects.create(user=request.user, text=text, sentiment=sentiment, score=score)
 
-    return render(request, "index.html", {"sentiment": sentiment, "score": score, "text": text})
-    # return render(request, "analyzer/index.html", {"sentiment": sentiment, "score": score, "text": text})
+        return render(request, "index.html", {"sentiment": sentiment, "score": score, "text": text})
+    return render(request, "analyze.html")
+
+
+@login_required
+def analysis_history(request):
+    analyses = SentimentAnalysis.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, "history.html", {"analyses": analyses})
