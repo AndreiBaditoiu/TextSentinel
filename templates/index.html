@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Analyzer</title>
+</head>
+<body>
+    <h1>Text Sentiment Analysis</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <textarea name="text" rows="5" cols="50">{{ text }}</textarea><br>
+        <button type="submit">Analyze</button>
+    </form>
+
+    {% if sentiment %}
+        <h2>Result:< </h2>
+        <p>Sentiment: <strong>{{ sentiment }}</strong></p>
+        <p>Score: <strong>{{ score }}</strong></p>
+    {% endif %}
+
+</body>
+</html>
