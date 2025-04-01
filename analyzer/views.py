@@ -17,7 +17,8 @@ def analyze_text(request):
         text = request.POST.get('text', "")
         analysis = TextBlob(text)
         # analyzer = SentimentIntensityAnalyzer()
-        score = analysis.sentiment.polarity_scores(text)["compound"]
+        score = analysis.sentiment.polarity
+
 
         if score > 0.1:
             sentiment = "positive"
@@ -31,7 +32,7 @@ def analyze_text(request):
         SentimentAnalysis.objects.create(user=request.user, text=text, sentiment=sentiment, score=score)
 
         return render(request, "analyze.html", {"sentiment": sentiment, "score": score, "text": text})
-    return render(request, "analize.html")
+    return render(request, "analyze.html")
 
 
 @login_required
