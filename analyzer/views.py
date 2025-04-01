@@ -30,8 +30,8 @@ def analyze_text(request):
 
         SentimentAnalysis.objects.create(user=request.user, text=text, sentiment=sentiment, score=score)
 
-        return render(request, "index.html", {"sentiment": sentiment, "score": score, "text": text})
-    return render(request, "analyze.html")
+        return render(request, "analyze.html", {"sentiment": sentiment, "score": score, "text": text})
+    return render(request, "analize.html")
 
 
 @login_required
