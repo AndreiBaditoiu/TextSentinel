@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from textblob import TextBlob
+
+from .ml.sentiment_model import analyze_sentiment
 from .models import SentimentAnalysis
 
 
@@ -16,14 +17,8 @@ def analyze_text(request):
         if not text:
             error = "Text input cannot be empty."
         else:
-            analysis = TextBlob(text)
-            score = analysis.sentiment.polarity  # Correct TextBlob usage
-            if score > 0.1:
-                sentiment = "positive"
-            elif score < -0.1:
-                sentiment = "negative"
-            else:
-                sentiment = "neutral"
+            sentiment, score = analyze_sentiment(text)
             SentimentAnalysis.objects.create(user=request.user, text=text, sentiment=sentiment, score=score)
 
-    return render(request, "analyze.html", {"sentiment": sentiment, "score": score, "text": text, "error": error})
+    return render(request, "analyze.html", {"sentiment": sentiment, "score": score, "text": text,
+                                            "error": error})
